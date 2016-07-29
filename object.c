@@ -47,7 +47,9 @@ static int quadratic_solve(float a, float b, float c, float *x0, float *x1)
 
 	return 1; 
 } 
-static int sphere_intersect(struct object *object, struct ray *ray, struct hit *hit)
+
+static int sphere_intersect(struct object *object,
+		struct ray *ray, struct hit *hit)
 {
 	struct sphere *sphere = (struct sphere *) object;
 
@@ -105,6 +107,47 @@ struct object *sphere_alloc(float radius)
 
 	sphere = (struct sphere *) object;
 	sphere->radius = radius;
+
+	return object;
+}
+
+static int plane_intersect(struct object *object,
+		struct ray *ray, struct hit *hit)
+{
+	float n;
+	float d;
+	float t;
+	struct plane *plane = (struct plane *) object;
+	vec3 position = mat4_mulv4(&object->to_world, vec4f(0.f, 0.f, 0.f, 1.f)).v3;
+	vec3 normal = mat4_mulv4(&object->to_world, vec4_vec3(plane->normal, 0.f)).v3;
+
+	vec3 direction = vec3_sub(position, ray->origin);
+	n = vec3_dot(normal, direction);
+	d = vec3_dot(normal, ray->direction);
+	t = n / d;
+	if (t > 0.f) {
+		hit->distance = t;
+		hit->position = vec3_add(ray->origin, vec3_mulf(ray->direction, t));
+		hit->normal = normal;
+		return 1;
+	}
+
+	return 0;
+}
+
+struct object *plane_alloc(vec3 normal)
+{
+	struct object *object;
+	struct plane *plane;
+
+	object = object_alloc(sizeof(struct plane));
+	if (!object)
+		return NULL;
+
+	object->intersect = plane_intersect;
+
+	plane = (struct plane *) object;
+	plane->normal = vec3_normalize(normal);
 
 	return object;
 }

@@ -31,13 +31,14 @@ int main(int argc, char *argv[])
 {
 	int i;
 	int stop_options;
-	int screen_width = 800;
-	int screen_height = 600;
+	int screen_width = 1024;
+	int screen_height = 720;
 	struct image *image;
 	char *error;
 	struct camera *camera;
 	struct object *sphere;
 	struct object *light;
+	struct object *plane;
 	char *filename;
 
 	filename = NULL;
@@ -76,7 +77,7 @@ int main(int argc, char *argv[])
 	}
 
 	light = light_alloc(vec3f(1.f, 1.f, 1.f));
-	object_transform_add(light, mat4_translation(vec3f(0.f, 5.f, 2.f)));
+	object_transform_add(light, mat4_translation(vec3f(0.f, 20.f, 10.f)));
 	object_array_push(&lights, &light);
 
 	sphere = sphere_alloc(2.f);
@@ -87,8 +88,20 @@ int main(int argc, char *argv[])
 	object_transform_add(sphere, mat4_translation(vec3f(0.f, 2.f, 2.f)));
 	object_array_push(&objects, &sphere);
 
+	sphere = sphere_alloc(0.5f);
+	object_transform_add(sphere, mat4_translation(vec3f(5.f, 0.f, 0.f)));
+	object_array_push(&objects, &sphere);
+
+	sphere = sphere_alloc(1.f);
+	object_transform_add(sphere, mat4_translation(vec3f(-2.f, 3.f, 1.f)));
+	object_array_push(&objects, &sphere);
+
+	plane = plane_alloc(vec3f(0.f, 1.f, 0.f));
+	object_transform_add(plane, mat4_translation(vec3f(0.f, -3.f, 0.f)));
+	object_array_push(&objects, &plane);
+
 	camera = camera_alloc(screen_width, screen_height, 90.f,
-			vec3f(0.f, 0.f, 5.f), vec3f(0.f, 0.f, 0.f));
+			vec3f(0.f, 0.f, 7.f), vec3f(0.f, 0.f, 0.f));
 
 	size_t j;
 	size_t hits_count = 0;
